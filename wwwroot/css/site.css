@@ -1,0 +1,380 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Calendar Styles */
+.dark-mode {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+.dark-mode .card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+
+.dark-mode .table {
+  color: #f5f5f5;
+}
+
+.dark-mode .table-bordered {
+  border-color: #333;
+}
+
+.dark-mode .table th,
+.dark-mode .table td {
+  border-color: #333;
+}
+
+.dark-mode .text-muted {
+  color: #aaa !important;
+}
+
+.dark-mode .bg-info {
+  background-color: #064663 !important;
+}
+
+.dark-mode .bg-warning {
+  background-color: #8B6914 !important;
+}
+
+.dark-mode .border-info {
+  border-color: #064663 !important;
+}
+
+.dark-mode .border-warning {
+  border-color: #8B6914 !important;
+}
+
+/* Enhanced Calendar Styles */
+.calendar-container {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.calendar-header {
+  padding: 20px;
+  background: linear-gradient(to right, #4481eb, #04befe);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.calendar-day {
+  height: 110px;
+  min-width: 110px;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.calendar-day:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.calendar-day.today {
+  box-shadow: inset 0 0 0 2px #0d6efd;
+  font-weight: bold;
+}
+
+.calendar-day-header {
+  font-weight: 500;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 10px 0;
+}
+
+.calendar-event {
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-left: 3px solid;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-event.lunar {
+  border-left-color: #ffc107;
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.calendar-event.solar {
+  border-left-color: #17a2b8;
+  background-color: rgba(23, 162, 184, 0.1);
+}
+
+.add-event-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: #0d6efd;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: scale(0.8);
+  z-index: 2;
+}
+
+.calendar-day:hover .add-event-button {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.add-event-button:hover {
+  background-color: #0b5ed7;
+  transform: scale(1.1);
+}
+
+.event-card {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s;
+  margin-bottom: 15px;
+  border: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.15);
+}
+
+.event-card .card-header {
+  border-bottom: none;
+  padding: 15px;
+}
+
+.event-card .card-body {
+  padding: 15px;
+}
+
+.event-card .lunar-indicator {
+  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  padding: 5px 10px;
+  border-radius: 15px;
+}
+
+.event-card .solar-indicator {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  padding: 5px 10px;
+  border-radius: 15px;
+}
+
+.event-controls {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.event-card:hover .event-controls {
+  opacity: 1;
+}
+
+.theme-toggle-btn {
+  border-radius: 30px;
+  padding: 8px 15px;
+  transition: all 0.3s;
+  background: linear-gradient(to right, #f7d55d, #fc913a);
+  border: none;
+  color: #3c3c3c;
+}
+
+.dark-mode .theme-toggle-btn {
+  background: linear-gradient(to right, #2c3e50, #4ca1af);
+  color: white;
+}
+
+.dark-mode .calendar-day {
+  border-color: #333 !important;
+}
+
+.dark-mode .calendar-day-header {
+  border-bottom-color: #333;
+}
+
+.dark-mode .calendar-day.today {
+  box-shadow: inset 0 0 0 2px #4ca1af;
+}
+
+.dark-mode .add-event-button {
+  background-color: #4ca1af;
+}
+
+.dark-mode .add-event-button:hover {
+  background-color: #3a8493;
+}
+
+.dark-mode .calendar-event.lunar {
+  background-color: rgba(255, 193, 7, 0.15);
+}
+
+.dark-mode .calendar-event.solar {
+  background-color: rgba(23, 162, 184, 0.15);
+}
+
+.dark-mode .event-card {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.notification-badge {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  border-radius: 50%;
+  padding: 3px 6px;
+  font-size: 0.7rem;
+}
+
+.calendar-date-selector {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .calendar-date-selector {
+  background-color: #2c3e50;
+}
+
+@media (max-width: 768px) {
+  .calendar-day {
+    height: 80px;
+    min-width: auto;
+  }
+  
+  .add-event-button {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+}
+
+/* Auth Form Styles */
+.auth-container {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  max-width: 450px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: none;
+  overflow: hidden;
+}
+
+.auth-card .card-header {
+  border-bottom: none;
+  padding: 25px 20px;
+}
+
+.auth-card.login-card .card-header {
+  background: linear-gradient(135deg, #0143a3, #0273d4);
+}
+
+.auth-card.register-card .card-header {
+  background: linear-gradient(135deg, #1e824c, #27ae60);
+}
+
+.form-floating > label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-select:focus ~ label {
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+.form-floating > .form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.form-control.is-valid:focus, 
+.was-validated .form-control:valid:focus {
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
+}
+
+.form-control.is-invalid:focus, 
+.was-validated .form-control:invalid:focus {
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15);
+}
+
+.auth-card .btn-primary {
+  background: linear-gradient(135deg, #0143a3, #0273d4);
+  border: none;
+  box-shadow: 0 4px 15px rgba(2, 115, 212, 0.3);
+  transition: all 0.3s;
+}
+
+.auth-card .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 115, 212, 0.4);
+}
+
+.auth-card .btn-success {
+  background: linear-gradient(135deg, #1e824c, #27ae60);
+  border: none;
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+  transition: all 0.3s;
+}
+
+.auth-card .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+.auth-card .card-footer {
+  background: rgba(0, 0, 0, 0.02);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.has-error label {
+  color: #dc3545 !important;
+}
+
+.has-error .form-control {
+  border-color: #dc3545 !important;
+}
+
+.dark-mode .auth-card {
+  background-color: #1e1e1e;
+}
+
+.dark-mode .auth-card .card-footer {
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}

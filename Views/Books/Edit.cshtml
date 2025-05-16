@@ -1,0 +1,81 @@
+﻿@model QuanLySanPhamBasic.Models.Book
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sách";
+}
+
+<h2 class="text-center mt-4 mb-4">✏️ @ViewData["Title"]</h2>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg rounded-4">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold">Tiêu đề</label>
+                            <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề sách..." />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Author" class="form-label fw-semibold">Tác giả</label>
+                            <input asp-for="Author" class="form-control" placeholder="Nhập tên tác giả..." />
+                            <span asp-validation-for="Author" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label fw-semibold">Giá bán</label>
+                            <input asp-for="Price" class="form-control" type="number" placeholder="Nhập giá tiền..." />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" asp-for="Available" id="availableEditCheck" />
+                            <label class="form-check-label fw-semibold" for="availableEditCheck">
+                                @Html.DisplayNameFor(model => model.Available)
+                            </label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Publisher" class="form-label fw-semibold">Nhà xuất bản</label>
+                            <input asp-for="Publisher" class="form-control" placeholder="Nhập tên nhà xuất bản..." />
+                            <span asp-validation-for="Publisher" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CreatedDate" class="form-label fw-semibold">Ngày tạo</label>
+                            <input asp-for="CreatedDate" class="form-control" type="date" />
+                            <span asp-validation-for="CreatedDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="GenreId" class="form-label fw-semibold">Thể loại</label>
+                            <select asp-for="GenreId" class="form-select" asp-items="ViewBag.GenreId">
+                                <option value="">-- Chọn thể loại --</option>
+                            </select>
+                            <span asp-validation-for="GenreId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-outline-secondary" asp-action="Index">
+                                <i class="bi bi-arrow-left-circle"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

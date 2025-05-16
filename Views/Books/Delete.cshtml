@@ -1,0 +1,47 @@
+﻿@model QuanLySanPhamBasic.Models.Book
+
+@{
+    ViewData["Title"] = "Delete Book";
+}
+
+<div class="container mt-4">
+    <div class="card border-danger shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0">⚠️ Confirm Delete</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Are you sure you want to delete the following book?</h5>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Title:</dt>
+                <dd class="col-sm-9">@Model.Title</dd>
+
+                <dt class="col-sm-3">Author:</dt>
+                <dd class="col-sm-9">@Model.Author</dd>
+
+                <dt class="col-sm-3">Price:</dt>
+                <dd class="col-sm-9">@Model.Price.ToString("C")</dd>
+
+                <dt class="col-sm-3">Available:</dt>
+                <dd class="col-sm-9">@Model.Available</dd>
+
+                <dt class="col-sm-3">Publisher:</dt>
+                <dd class="col-sm-9">@Model.Publisher</dd>
+
+                <dt class="col-sm-3">Created Date:</dt>
+                <dd class="col-sm-9">@Model.CreatedDate.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-3">Genre:</dt>
+                <dd class="col-sm-9">@Model.Genre?.Description</dd>
+            </dl>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

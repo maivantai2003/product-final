@@ -1,0 +1,141 @@
+﻿@using System.Collections.Generic
+@using QuanLySanPhamBasic.Models
+@using QuanLySanPhamBasic.ViewModel
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<AppUser> SignInManager
+
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3 class="font-weight-bold mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        @ViewData["Title"]
+                    </h3>
+                    <p class="mb-0 mt-2">Tạo tài khoản mới để tiếp tục</p>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-controller="Auth" asp-action="Register" method="post" role="form">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 rounded-3 py-2 px-3 bg-light" role="alert"></div>
+                        
+                        <div class="form-floating mb-3">
+                            <input asp-for="FullName" class="form-control" id="inputFullName" placeholder="Họ và tên" />
+                            <label asp-for="FullName">
+                                <i class="fas fa-user me-1"></i> Họ và tên
+                            </label>
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" id="inputEmail" placeholder="name@example.com" />
+                            <label asp-for="Email">
+                                <i class="fas fa-envelope me-1"></i> Email
+                            </label>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    <input asp-for="Password" class="form-control" id="inputPassword" placeholder="Mật khẩu" />
+                                    <label asp-for="Password">
+                                        <i class="fas fa-lock me-1"></i> Mật khẩu
+                                    </label>
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    <input asp-for="ConfirmPassword" class="form-control" id="inputConfirmPassword" placeholder="Xác nhận mật khẩu" />
+                                    <label asp-for="ConfirmPassword">
+                                        <i class="fas fa-check-circle me-1"></i> Xác nhận mật khẩu
+                                    </label>
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 mb-2">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Đăng ký
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small">
+                        <a class="text-decoration-none" asp-action="Login">
+                            <i class="fas fa-sign-in-alt me-1"></i>
+                            Đã có tài khoản? Đăng nhập!
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #0d6efd;
+        opacity: 1;
+    }
+    
+    .form-floating > .form-control:focus,
+    .form-floating > .form-control:not(:placeholder-shown) {
+        border-color: #0d6efd;
+    }
+    
+    /* Password match visual indicator */
+    #inputConfirmPassword:valid:not(:placeholder-shown) {
+        border-color: #198754;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+    
+    #inputConfirmPassword:invalid:not(:placeholder-shown) {
+        border-color: #dc3545;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Check if passwords match in real-time
+        $(document).ready(function() {
+            $("#inputPassword, #inputConfirmPassword").on("keyup", function() {
+                var password = $("#inputPassword").val();
+                var confirmPassword = $("#inputConfirmPassword").val();
+                
+                if (confirmPassword.length > 0) {
+                    if (password === confirmPassword) {
+                        $("#inputConfirmPassword").addClass("is-valid").removeClass("is-invalid");
+                    } else {
+                        $("#inputConfirmPassword").addClass("is-invalid").removeClass("is-valid");
+                    }
+                }
+            });
+            
+            // Highlight labels when form has validation errors
+            if ($(".field-validation-error").length > 0) {
+                $(".field-validation-error").closest(".form-floating").addClass("has-error");
+            }
+        });
+    </script>
+}

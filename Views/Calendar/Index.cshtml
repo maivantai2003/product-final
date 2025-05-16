@@ -1,0 +1,304 @@
+@model QuanLySanPhamBasic.ViewModel.CalendarViewModel
+@{
+    ViewData["Title"] = "Lịch";
+    string[] monthNames = new[] { "", "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12" };
+    string[] dayNames = new[] { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật" };
+    var firstDayOfMonth = new DateTime(Model.CurrentYear, Model.CurrentMonth, 1);
+    var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+    int daysInMonth = lastDayOfMonth.Day;
+    int startDayOfWeek = ((int)firstDayOfMonth.DayOfWeek + 6) % 7; 
+}
+
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h1 class="text-primary fw-bold">
+                <i class="fas fa-calendar-alt me-2"></i>
+                @User.Identity?.Name
+            </h1>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group">
+                @* <a href="@Url.Action("Index", "Calendar")" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-day me-1"></i> Lịch âm dương
+                </a> *@
+                <a href="@Url.Action("Index", "Calendar", new { myEvents = true })" class="btn btn-outline-primary">
+                    <i class="fas fa-list me-1"></i> Sự kiện của tôi
+                </a>
+            </div>
+            <button type="button" id="btnThemeToggle" class="btn theme-toggle-btn ms-2">
+                <i class="fas fa-sun" id="lightIcon"></i>
+                <i class="fas fa-moon d-none" id="darkIcon"></i>
+                <span id="themeName" class="ms-1">Sáng</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card calendar-container">
+                <div class="card-body calendar-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h2 class="display-5 mb-0 fw-bold">Tháng @Model.CurrentMonth</h2>
+                            <h3 class="mb-1 fw-light">@Model.CurrentYear</h3>
+                            <div class="badge bg-light text-dark fs-6 px-3 py-2">
+                                <i class="fas fa-calendar-week me-1"></i> Tuần @(GetWeekOfYear(Model.CurrentDate)) | Ngày @Model.CurrentDate.DayOfYear
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="p-2 bg-light rounded-circle text-center d-inline-block" style="width: 80px; height: 80px;">
+                                <h1 class="text-primary mb-0 mt-1 display-4">@Model.CurrentDate.Day</h1>
+                                <span class="small">Hôm nay</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 calendar-date-selector">
+                        <a href="@Url.Action("Index", "Calendar", new { month = Model.CurrentMonth == 1 ? 12 : Model.CurrentMonth - 1, year = Model.CurrentMonth == 1 ? Model.CurrentYear - 1 : Model.CurrentYear })" class="btn btn-outline-light">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <div class="d-flex">
+                            <select id="monthSelector" class="form-select me-2" onchange="changeMonth()">
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    if (i == Model.CurrentMonth)
+                                    {
+                                        <option value="@i" selected>@monthNames[i]</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@i">@monthNames[i]</option>
+                                    }
+                                }
+                            </select>
+                            <select id="yearSelector" class="form-select" onchange="changeMonth()">
+                                @for (int i = Model.CurrentYear - 10; i <= Model.CurrentYear + 10; i++)
+                                {
+                                    if (i == Model.CurrentYear)
+                                    {
+                                        <option value="@i" selected>@i</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <a href="@Url.Action("Index", "Calendar", new { month = Model.CurrentMonth == 12 ? 1 : Model.CurrentMonth + 1, year = Model.CurrentMonth == 12 ? Model.CurrentYear + 1 : Model.CurrentYear })" class="btn btn-outline-light">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-3">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                @foreach (var day in dayNames)
+                                {
+                                    <th class="text-center calendar-day-header @(day == "Thứ 7" || day == "Chủ nhật" ? "text-danger" : "")">@day</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int dayCounter = 1;
+                                for (int i = 0; i < 6; i++)
+                                {
+                                    if (dayCounter > daysInMonth) { break; }
+                                    <tr>
+                                        @for (int j = 0; j < 7; j++)
+                                        {
+                                            if ((i == 0 && j < startDayOfWeek) || dayCounter > daysInMonth)
+                                            {
+                                                <td class="p-2"></td>
+                                            }
+                                            else
+                                            {
+                                                bool isToday = dayCounter == Model.CurrentDate.Day && Model.CurrentMonth == Model.CurrentDate.Month && Model.CurrentYear == Model.CurrentDate.Year;
+                                                bool isWeekend = j >= 5;
+                                                var eventsForDay = Model.Events.Where(e => e.EventDate.Day == dayCounter).ToList();
+                                                bool hasEvents = eventsForDay.Any();
+
+                                                <td class="p-2 calendar-day @(isToday ? "today" : "") @(isWeekend ? "text-danger" : "")">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span class="fw-bold">@dayCounter</span>
+                                                        @if (hasEvents)
+                                                        {
+                                                            <span class="badge bg-danger notification-badge">@eventsForDay.Count</span>
+                                                        }
+                                                    </div>
+                                                    
+                                                    @if (hasEvents)
+                                                    {
+                                                        <div class="mt-1">
+                                                            @foreach (var evt in eventsForDay.Take(2))
+                                                            {
+                                                                <div class="calendar-event @(evt.IsLunarCalendar ? "lunar" : "solar")">
+                                                                    <span class="small fw-medium">@evt.Title</span>
+                                                                </div>
+                                                            }
+                                                            @if (eventsForDay.Count > 2)
+                                                            {
+                                                                <div class="small text-center mt-1">
+                                                                    <span class="badge bg-secondary">+ @(eventsForDay.Count - 2) sự kiện khác</span>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                    
+                                                    <a href="@Url.Action("Create", "Calendar", new { day = dayCounter, month = Model.CurrentMonth, year = Model.CurrentYear })" 
+                                                       class="add-event-button">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
+                                                </td>
+                                                dayCounter++;
+                                            }
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Events.Any())
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="mb-0 fw-bold">
+                                    <i class="fas fa-list-alt me-2"></i>
+                                    Danh sách sự kiện của bạn
+                                </h3>
+                                <p class="mb-0">Quản lý tất cả sự kiện quan trọng của bạn tại đây</p>
+                            </div>
+                            <a href="@Url.Action("Create", "Calendar", new { day = DateTime.Today.Day, month = Model.CurrentMonth, year = Model.CurrentYear })" 
+                               class="btn btn-light">
+                                <i class="fas fa-plus me-1"></i> Thêm sự kiện mới
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var eventGroup in Model.Events.GroupBy(e => e.EventDate.Date).OrderBy(g => g.Key))
+                        {
+                            <div class="mb-4">
+                                <h4 class="badge bg-primary p-2 mb-3 fs-6">
+                                    <i class="fas fa-calendar-day me-1"></i>
+                                    @eventGroup.Key.ToString("dd/MM/yyyy")
+                                </h4>
+                                <div class="row">
+                                    @foreach (var evt in eventGroup)
+                                    {
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card event-card @(evt.IsLunarCalendar ? "border-warning" : "border-info")">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="card-title mb-0 fw-bold">
+                                                            <i class="fas @(evt.IsLunarCalendar ? "fa-moon" : "fa-sun") me-2"></i> @evt.Title
+                                                        </h5>
+                                                        <div class="event-controls">
+                                                            <a href="@Url.Action("Edit", "Calendar", new { id = evt.Id })" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <form method="post" action="@Url.Action("Delete", "Calendar", new { id = evt.Id })" style="display: inline;">
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sự kiện này?');">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    @if (!string.IsNullOrEmpty(evt.Description))
+                                                    {
+                                                        <p class="card-text mt-3">@evt.Description</p>
+                                                    }
+                                                    <div class="d-flex mt-3">
+                                                        <span class="badge @(evt.IsLunarCalendar ? "lunar-indicator" : "solar-indicator") me-2">
+                                                            <i class="fas @(evt.IsLunarCalendar ? "fa-moon" : "fa-sun") me-1"></i>
+                                                            @(evt.IsLunarCalendar ? "Âm lịch" : "Dương lịch")
+                                                        </span>
+                                                        @if (evt.HasNotification)
+                                                        {
+                                                            <span class="badge bg-success me-2">
+                                                                <i class="fas fa-bell me-1"></i>
+                                                                @evt.NotificationType
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function changeMonth() {
+            const month = document.getElementById('monthSelector').value;
+            const year = document.getElementById('yearSelector').value;
+            window.location.href = '@Url.Action("Index", "Calendar")?month=' + month + '&year=' + year;
+        }
+
+        document.getElementById('btnThemeToggle').addEventListener('click', function() {
+            const lightIcon = document.getElementById('lightIcon');
+            const darkIcon = document.getElementById('darkIcon');
+            const themeName = document.getElementById('themeName');
+            
+            if (lightIcon.classList.contains('d-none')) {
+                // Switch to light mode
+                document.body.classList.remove('dark-mode');
+                lightIcon.classList.remove('d-none');
+                darkIcon.classList.add('d-none');
+                themeName.textContent = 'Sáng';
+                localStorage.setItem('theme', 'light');
+            } else {
+                // Switch to dark mode
+                document.body.classList.add('dark-mode');
+                lightIcon.classList.add('d-none');
+                darkIcon.classList.remove('d-none');
+                themeName.textContent = 'Tối';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Check for saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const lightIcon = document.getElementById('lightIcon');
+            const darkIcon = document.getElementById('darkIcon');
+            const themeName = document.getElementById('themeName');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                lightIcon.classList.add('d-none');
+                darkIcon.classList.remove('d-none');
+                themeName.textContent = 'Tối';
+            }
+        });
+    </script>
+}
+
+@functions {
+    public int GetWeekOfYear(DateTime date)
+    {
+        System.Globalization.Calendar calendar = System.Globalization.CultureInfo.CurrentCulture.Calendar;
+        return calendar.GetWeekOfYear(date, System.Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+    }
+} 

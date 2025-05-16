@@ -1,0 +1,187 @@
+﻿@using System.Collections.Generic
+@using QuanLySanPhamBasic.Models
+@using QuanLySanPhamBasic.ViewModel
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@model QuanLySanPhamBasic.Models.Cart
+
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold text-primary">🛒 Giỏ hàng của bạn</h2>
+
+    @if (Model != null)
+    {
+        <div class="row">
+            <!-- Giỏ hàng -->
+            <div class="col-lg-8 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-semibold">Danh sách sản phẩm</h5>
+                    <a asp-route-cartId="@Model.Id" asp-action="DeleteAllCart" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash3"></i> Xóa tất cả
+                    </a>
+                </div>
+
+                <div class="table-responsive shadow-sm rounded bg-white">
+                    <table class="table table-bordered text-center align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.CartDetails != null && Model.CartDetails.Any())
+                            {
+                                foreach (var item in Model.CartDetails)
+                                {
+                                    <tr class="cart-item" data-price="@item.Price" data-cart-id="@item.CartId" data-book-id="@item.BookId">
+                                        <td>@item.Book?.Title</td>
+                                        <td>@item.Price.ToString("C")</td>
+                                        <td>
+                                            <input type="number" value="@item.Quantity" min="1" class="form-control text-center quantity-input" 
+                                                  style="width: 80px; margin: auto;" />
+                                        </td>
+                                        <td class="item-total">@((item.Price * item.Quantity).ToString("C"))</td>
+                                        <td>
+                                            <a asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId" asp-action="Delete" class="delete">
+                                                <i class="material-icons" title="Delete">&#xE872;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Giỏ hàng của bạn trống.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+             
+            </div>
+
+            <!-- Thanh toán -->
+            <div class="col-lg-4">
+                <div class="bg-white rounded shadow-sm p-4">
+                    <h5 class="fw-semibold mb-3">🧾 Thông tin thanh toán</h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span id="subTotal">@Model.TotalPrice.ToString("C")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Giảm giá:</span>
+                        <span class="text-success">-0₫</span>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between fw-bold text-primary fs-5 mb-3">
+                        <span>Thành tiền:</span>
+                        <span id="grandTotal">@Model.TotalPrice.ToString("C")</span>
+                    </div>
+
+                    <a asp-controller="Cart" asp-action="Checkout" class="btn btn-primary w-100 @(Model.CartDetails?.Any() == true ? "" : "disabled")">
+                        <i class="bi bi-credit-card me-2"></i>Tiến hành thanh toán
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center mt-5">
+            @TempData["Message"] ?? "Không tìm thấy giỏ hàng."
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Update item total when quantity changes
+            $('.quantity-input').on('change', function() {
+                updateItemTotal($(this));
+                calculateCartTotal();
+            });
+            
+            // Update all totals
+            function updateItemTotal(quantityInput) {
+                var row = quantityInput.closest('.cart-item');
+                var price = parseInt(row.data('price'));
+                var quantity = parseInt(quantityInput.val());
+                
+                if (quantity < 1) {
+                    quantityInput.val(1);
+                    quantity = 1;
+                }
+                
+                var total = price * quantity;
+                row.find('.item-total').text(formatCurrency(total));
+            }
+            
+            // Calculate grand total
+            function calculateCartTotal() {
+                var total = 0;
+                $('.cart-item').each(function() {
+                    var price = parseInt($(this).data('price'));
+                    var quantity = parseInt($(this).find('.quantity-input').val());
+                    total += price * quantity;
+                });
+                
+                $('#subTotal').text(formatCurrency(total));
+                $('#grandTotal').text(formatCurrency(total));
+            }
+            
+            // Format currency
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            }
+            
+            // Update cart button
+            $('#updateCart').on('click', function() {
+                var updates = [];
+                
+                $('.cart-item').each(function() {
+                    var cartId = $(this).data('cart-id');
+                    var bookId = $(this).data('book-id');
+                    var quantity = parseInt($(this).find('.quantity-input').val());
+                    
+                    updates.push({
+                        cartId: cartId,
+                        bookId: bookId,
+                        quantity: quantity
+                    });
+                });
+                
+                $.ajax({
+                    url: '/Cart/UpdateQuantities',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(updates),
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success('Giỏ hàng đã được cập nhật');
+                            location.reload();
+                        } else {
+                            toastr.error('Có lỗi xảy ra khi cập nhật giỏ hàng');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Có lỗi xảy ra khi cập nhật giỏ hàng');
+                    }
+                });
+            });
+        });
+    </script>
+}

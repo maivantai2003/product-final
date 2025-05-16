@@ -1,0 +1,144 @@
+@model QuanLySanPhamBasic.ViewModel.CalendarEventViewModel
+@{
+    ViewData["Title"] = "Thêm sự kiện";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card calendar-container">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        Thêm sự kiện
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-medium">
+                                <i class="fas fa-heading me-1"></i> Tiêu đề
+                            </label>
+                            <input asp-for="Title" class="form-control form-control-lg shadow-sm" placeholder="Nhập tên sự kiện" />
+                            <span asp-validation-for="Title" class="text-danger mt-1"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="EventDate" class="form-label fw-medium">
+                                <i class="fas fa-calendar-day me-1"></i> Ngày diễn ra
+                            </label>
+                            <input asp-for="EventDate" class="form-control form-control-lg shadow-sm" type="date" />
+                            <span asp-validation-for="EventDate" class="text-danger mt-1"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">
+                                <i class="fas fa-calendar-alt me-1"></i> Loại lịch
+                            </label>
+                            <div class="row g-2 mt-2">
+                                <div class="col-md-6">
+                                    <div class="form-check card p-3 border shadow-sm">
+                                        <input type="radio" id="lunar" name="IsLunarCalendar" value="true" class="form-check-input" />
+                                        <label class="form-check-label fw-medium" for="lunar">
+                                            <i class="fas fa-moon me-2 text-warning"></i> Âm lịch
+                                        </label>
+                                        <div class="text-muted small mt-1">Sử dụng cho các sự kiện theo lịch âm</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check card p-3 border shadow-sm">
+                                        <input type="radio" id="solar" name="IsLunarCalendar" value="false" class="form-check-input" checked />
+                                        <label class="form-check-label fw-medium" for="solar">
+                                            <i class="fas fa-sun me-2 text-info"></i> Dương lịch
+                                        </label>
+                                        <div class="text-muted small mt-1">Sử dụng cho các sự kiện theo lịch dương</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-medium">
+                                <i class="fas fa-align-left me-1"></i> Ghi chú
+                            </label>
+                            <textarea asp-for="Description" class="form-control shadow-sm" rows="4" placeholder="Nhập ghi chú cho sự kiện"></textarea>
+                            <span asp-validation-for="Description" class="text-danger mt-1"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="card p-3 border shadow-sm">
+                                <div class="form-check form-switch">
+                                    <input asp-for="HasNotification" class="form-check-input" id="hasNotification" />
+                                    <label asp-for="HasNotification" class="form-check-label fw-medium" for="hasNotification">
+                                        <i class="fas fa-bell me-1"></i> Bật thông báo
+                                    </label>
+                                </div>
+                                <div class="text-muted small mt-1">Nhận thông báo về sự kiện này</div>
+                                
+                                <div id="notificationOptions" class="mt-3" style="display: none;">
+                                    <label asp-for="NotificationType" class="form-label">Loại thông báo</label>
+                                    <select asp-for="NotificationType" class="form-select shadow-sm">
+                                        <option value="Không">Không có thông báo</option>
+                                        <option value="Email">Email</option>
+                                        <option value="SMS">SMS</option>
+                                        <option value="Push">Push notification</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" asp-route-month="@Model.EventDate.Month" asp-route-year="@Model.EventDate.Year" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-1"></i> Trở về
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-plus-circle me-1"></i> Thêm sự kiện
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('hasNotification').addEventListener('change', function() {
+            const notificationOptions = document.getElementById('notificationOptions');
+            if (this.checked) {
+                notificationOptions.style.display = 'block';
+            } else {
+                notificationOptions.style.display = 'none';
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const hasNotification = document.getElementById('hasNotification');
+            if (hasNotification.checked) {
+                document.getElementById('notificationOptions').style.display = 'block';
+            }
+            
+            const lunarRadio = document.getElementById('lunar');
+            const solarRadio = document.getElementById('solar');
+            
+            function updateCalendarTypeStyles() {
+                if (lunarRadio.checked) {
+                    lunarRadio.closest('.card').classList.add('border-warning');
+                    solarRadio.closest('.card').classList.remove('border-info');
+                } else {
+                    lunarRadio.closest('.card').classList.remove('border-warning');
+                    solarRadio.closest('.card').classList.add('border-info');
+                }
+            }
+            
+            lunarRadio.addEventListener('change', updateCalendarTypeStyles);
+            solarRadio.addEventListener('change', updateCalendarTypeStyles);
+            
+            updateCalendarTypeStyles();
+        });
+    </script>
+} 

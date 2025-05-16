@@ -1,0 +1,11 @@
+﻿@model QuanLySanPhamBasic.Models.CartDetail
+
+<h2>Xóa Giỏ Hàng</h2>
+<p>@TempData["Message"]</p>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" name="cartId" value="@Model.CartId" />
+    <input type="hidden" name="bookId" value="@Model.BookId" />
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

@@ -1,0 +1,217 @@
+@model QuanLySanPhamBasic.Models.Cart
+@using QuanLySanPhamBasic.ViewModel
+
+@{
+    ViewData["Title"] = "Thanh toán đơn hàng";
+    CheckoutViewModel checkoutVM = new CheckoutViewModel();
+}
+
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold text-success">🛍️ Thanh toán đơn hàng</h2>
+
+    <form asp-action="ProcessCheckout" method="post">
+        <div class="row">
+            <!-- Thông tin vận chuyển -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm border-0 rounded mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-person-lines-fill me-2"></i>Thông tin vận chuyển
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="form-floating">
+                                    <input asp-for="@checkoutVM.FullName" class="form-control" id="fullName" placeholder="Họ và tên" required />
+                                    <label asp-for="@checkoutVM.FullName">Họ và tên người nhận</label>
+                                    <span asp-validation-for="@checkoutVM.FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="@checkoutVM.PhoneNumber" class="form-control" id="phoneNumber" placeholder="Số điện thoại" required />
+                                    <label asp-for="@checkoutVM.PhoneNumber">Số điện thoại</label>
+                                    <span asp-validation-for="@checkoutVM.PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input asp-for="@checkoutVM.Email" class="form-control" id="email" placeholder="Email" required />
+                                <label asp-for="@checkoutVM.Email">Email</label>
+                                <span asp-validation-for="@checkoutVM.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input asp-for="@checkoutVM.Address" class="form-control" id="address" placeholder="Địa chỉ" required />
+                                <label asp-for="@checkoutVM.Address">Địa chỉ giao hàng</label>
+                                <span asp-validation-for="@checkoutVM.Address" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <textarea asp-for="@checkoutVM.Notes" class="form-control" id="notes" placeholder="Ghi chú" style="height: 100px"></textarea>
+                                <label asp-for="@checkoutVM.Notes">Ghi chú</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-credit-card me-2"></i>Phương thức thanh toán
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" id="cod" value="COD" checked required>
+                            <label class="form-check-label" for="cod">
+                                <i class="bi bi-cash-coin me-2 text-success"></i>Thanh toán khi nhận hàng (COD)
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" id="banking" value="Banking" required>
+                            <label class="form-check-label" for="banking">
+                                <i class="bi bi-bank me-2 text-primary"></i>Chuyển khoản ngân hàng
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" id="momo" value="Momo" required>
+                            <label class="form-check-label" for="momo">
+                                <i class="bi bi-wallet2 me-2 text-danger"></i>Ví điện tử MoMo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin đơn hàng -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 rounded sticky-lg-top" style="top: 20px;">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-cart-check me-2"></i>Thông tin đơn hàng
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <h6 class="mb-3 text-muted">Sản phẩm trong giỏ hàng</h6>
+                            @if (Model.CartDetails != null && Model.CartDetails.Any())
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var item in Model.CartDetails)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between lh-sm px-0">
+                                            <div>
+                                                <h6 class="my-0">@item.Book?.Title</h6>
+                                                <small class="text-muted">@item.Quantity x @item.Price.ToString("C")</small>
+                                            </div>
+                                            <span class="text-body-secondary">@((item.Price * item.Quantity).ToString("C"))</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính:</span>
+                            <span>@Model.TotalPrice.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Phí vận chuyển:</span>
+                            <span>0₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Giảm giá:</span>
+                            <span class="text-success">-0₫</span>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="d-flex justify-content-between mb-3 fw-bold text-primary fs-5">
+                            <span>Tổng cộng:</span>
+                            <span>@Model.TotalPrice.ToString("C")</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-3">
+                            <i class="bi bi-check2-circle me-2"></i>Đặt hàng
+                        </button>
+                        
+                        <div class="mt-3 text-center">
+                            <a asp-controller="Cart" asp-action="Index" class="text-decoration-none">
+                                <i class="bi bi-arrow-left me-1"></i>Quay lại giỏ hàng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    
+    <!-- Make sure SweetAlert2 is loaded -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $("form").on("submit", function(e) {
+                e.preventDefault(); // Prevent the default form submission
+                
+                // Get form data
+                var formData = $(this).serialize();
+                
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Đang xử lý',
+                    text: 'Vui lòng đợi trong giây lát...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Use AJAX to submit the form
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("ProcessCheckout", "Cart")",
+                    data: formData,
+                    success: function(response) {
+                        // Show success message
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại cửa hàng chúng tôi.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            // When the user clicks OK, redirect to OrderConfirmation page
+                            window.location.href = response.redirectUrl || "@Url.Action("OrderConfirmation", "Cart")";
+                        });
+                    },
+                    error: function() {
+                        // Show error message
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+} 

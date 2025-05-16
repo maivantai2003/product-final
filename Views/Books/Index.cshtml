@@ -297,7 +297,7 @@
 
 			<!-- Thể loại -->
 			<div class="col-md-2">
-				<select name="genreId" class="form-select" asp-items="ViewBag.Genres">
+	<select onchange="this.form.submit()" name="genreId" class="form-select" asp-items="ViewBag.Genres">
 					<option value="">-- Thể loại --</option>
 				</select>
 			</div>

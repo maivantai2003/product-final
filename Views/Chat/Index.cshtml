@@ -8,7 +8,13 @@
 
 <div id="chatBox" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px;">
 </div>
-<input type="text" id="idInput" placeholder="Enter your id" class="form-control mb-2" />
+@* <input type="text" id="idInput" placeholder="Enter your id" class="form-control mb-2" /> *@
+<select id="receiverSelect" class="form-control mb-2">
+    <option value="">-- Select user to chat --</option>
+    @foreach (var user in (List<AppUser>)ViewBag.Users){
+        <option value="@user.Id">@user.UserName-@user.Email</option>
+    }
+</select>
 <input type="text" id="userInput" placeholder="Enter your name" class="form-control mb-2" />
 <input type="text" id="messageInput" placeholder="Type a message..." class="form-control mb-2" />
 <button id="sendButton" class="btn btn-primary">Send</button>

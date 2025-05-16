@@ -20,7 +20,7 @@ connection.on("deleteAll", function () {
 })
 
 $(document).on("click", "#sendButton", function () {
-    var id = $("#idInput").val()
+    var id = $("#receiverSelect").val()
     var user = $("#userInput").val()
     var message = $("#messageInput").val()
     console.log(id)
